@@ -34,7 +34,6 @@ define tomcat::instance (
   $fragment_engine         = undef,
   $fragment_service        = undef,
   $fragment_server         = undef,	
-  $jmx_port                = undef,
   $ensure                  = 'present',
 ) {
 
@@ -140,24 +139,6 @@ define tomcat::instance (
     group   => 'root',
     mode    => '0644',
     content => template("${module_name}/${tomcat_version}/server.xml.erb"),
-  }
-
-  if $jmx_port {
-    file { "${params['catalina_base']}/conf/jmxremote.access" :
-      ensure => file,
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0644',
-      source => "puppet:///modules/${module_name}/${tomcat_version}/jmxremote.access",
-    }
-
-    file { "${params['catalina_base']}/conf/jmxremote.password" :
-      ensure => file,
-      owner  => $params['tomcat_user'],
-      group  => $params['tomcat_user'],
-      mode   => '0600',
-      source => "puppet:///modules/${module_name}/${tomcat_version}/jmxremote.password",
-    }
   }
 
 }
