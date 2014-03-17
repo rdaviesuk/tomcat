@@ -45,8 +45,6 @@ class tomcat::params {
         }
       }
       $package_provider = $::osfamily
-      $catalina_home    = "/usr/share/${package_name}"
-      $service_name     = $package_name
       $env_base         = '/etc/sysconfig'
     }
 
