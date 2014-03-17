@@ -1,6 +1,6 @@
 define tomcat::instance (
   $java_home               = undef,
-  $package_name            = $::tomcat::package_name,
+  $parent_service          = $::tomcat::service_name,
   $env_base                = $::tomcat::env_base,
   $tomcat_version          = $::tomcat::tomcat_version,
   $catalina_home           = $::tomcat::catalina_home,
@@ -18,8 +18,8 @@ define tomcat::instance (
   $enable_security_manager = false,
   $shutdown_wait           = undef,
   $catalina_pid            = "/var/run/${name}.pid",
-  $log_base                = "/var/log/${::tomcat::service_name}",
-  $tomcat_envfile          = "${::tomcat::env_base}/${name}",
+  $log_base                = "/var/log/${parent_service}",
+  $tomcat_envfile          = "${env_base}/${name}",
   $service_enable          = true,
   $service_name            = $name,
   $shutdown_port           = 8005,
@@ -30,7 +30,7 @@ define tomcat::instance (
   $auto_deploy             = true,
   $access_log_pattern      = undef,
   $uri_encoding            = undef,
-  $fragment_hosti          = undef,
+  $fragment_host           = undef,
   $fragment_engine         = undef,
   $fragment_service        = undef,
   $fragment_server         = undef,	
@@ -64,13 +64,12 @@ define tomcat::instance (
 
   file { "/etc/init.d/${service_name}" :
     ensure => 'link',
-    target => "/etc/init.d/${::tomcat::service_name}",
+    target => "/etc/init.d/${parent_service}",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     require => [
       Class['tomcat'],
-      Package[$package_name],
     ],
   }
 
@@ -125,11 +124,8 @@ define tomcat::instance (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    require => [
-      Package[$package_name],
-    ],
     content => template("${module_name}/tomcat_env.erb"),
-    #notify  => Service[$service_name],
+    notify  => Service[$service_name],
   }
 
   # setup server.xml
