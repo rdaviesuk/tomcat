@@ -46,12 +46,6 @@ define tomcat::instance (
 
   validate_bool($service_enable)
 
-  if ( $log_base == undef or $log_base == '' ) {
-    $_log_base = "/var/log/${parent_service}"
-  } else {
-    $_log_base = $log_base
-  }
-
   group { $tomcat_group :
     ensure => $ensure,
     gid    => $tomcat_gid,
@@ -98,7 +92,7 @@ define tomcat::instance (
   file { [ "${catalina_base}/work",
       "${catalina_base}/webapps",
       $catalina_tmpdir,
-      "${_log_base}/${name}" ] :
+      "${log_base}/${name}" ] :
       ensure => directory,
       owner  => root,
       group  => $tomcat_group,
