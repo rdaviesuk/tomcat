@@ -1,3 +1,4 @@
+# see README.md
 define tomcat::instance (
   $java_home               = undef,
   $parent_service          = $::tomcat::service_name,
@@ -89,25 +90,25 @@ define tomcat::instance (
   }
 
   # create /work, /webapps, log dir writeable by tomcat_group
-  file { [ "${catalina_base}/conf", 
-           "${catalina_base}/webapps",
-           "${catalina_base}/work",
-           "${log_base}/${name}",
-           $catalina_tmpdir, ] :
+  file { [ "${catalina_base}/conf",
+        "${catalina_base}/webapps",
+        "${catalina_base}/work",
+        "${log_base}/${name}",
+        $catalina_tmpdir, ] :
       ensure => directory,
       owner  => 'root',
       group  => $tomcat_group,
       mode   => '0775',
-      notify  => Service[$service_name],
+      notify => Service[$service_name],
   }
 
   file { "${catalina_base}/logs" :
-    ensure  => link,
-    target  => "${log_base}/${name}",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    notify  => Service[$service_name],
+    ensure => link,
+    target => "${log_base}/${name}",
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    notify => Service[$service_name],
   }
 
   if ( $catalina_tmpdir != "${catalina_base}/temp" ) {
@@ -117,7 +118,7 @@ define tomcat::instance (
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
-      notify  => Service[$service_name],
+      notify => Service[$service_name],
     }
   }
 

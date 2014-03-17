@@ -1,3 +1,4 @@
+# see README.md
 class tomcat::params {
 
   $package_ensure = 'present'

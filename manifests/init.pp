@@ -1,3 +1,4 @@
+# see README.md
 class tomcat (
   $package_ensure   = $tomcat::params::package_ensure,
   $package_name     = $tomcat::params::package_name,

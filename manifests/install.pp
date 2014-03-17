@@ -1,3 +1,4 @@
+# see README.md
 class tomcat::install {
 
   package { 'tomcat':
