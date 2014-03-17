@@ -33,7 +33,7 @@ define tomcat::instance (
   $fragment_host           = undef,
   $fragment_engine         = undef,
   $fragment_service        = undef,
-  $fragment_server         = undef,	
+  $fragment_server         = undef,
   $ensure                  = 'present',
 ) {
 
@@ -42,8 +42,7 @@ define tomcat::instance (
   }
 
   validate_re($ensure, '^(present|absent)$',
-  "${ensure} is not supported for ensure.
-  Allowed values are 'present' and 'absent'.")
+    "${ensure} is not supported for ensure.\n  Allowed values are 'present' and 'absent'.")
 
   validate_bool($service_enable)
 
@@ -63,8 +62,8 @@ define tomcat::instance (
   }
 
   file { "/etc/init.d/${service_name}" :
-    ensure => 'link',
-    target => "/etc/init.d/${parent_service}",
+    ensure  => 'link',
+    target  => "/etc/init.d/${parent_service}",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
@@ -73,7 +72,7 @@ define tomcat::instance (
     ],
   }
 
-  service { "$service_name" :
+  service { $service_name :
     ensure     => $service_enable,
     enable     => $service_enable,
     hasrestart => true,
@@ -81,23 +80,23 @@ define tomcat::instance (
   }
 
   # setup catalina_base, we'll assume /conf goes here
-  file { [ "${catalina_base}",
-           "${catalina_base}/conf" ] :
-    ensure => directory,
-    owner  => root,
-    group  => root,
-    mode   => 0755,
+  file { [ $catalina_base,
+      "${catalina_base}/conf" ] :
+      ensure => directory,
+      owner  => root,
+      group  => root,
+      mode   => '0755',
   }
 
   # create /work, /webapps, log dir writeable by tomcat_group
   file { [ "${catalina_base}/work",
-           "${catalina_base}/webapps",
-           $catalina_tmpdir,
-           "${log_base}/${name}" ] :
-    ensure => directory,
-    owner  => root,
-    group  => $tomcat_group,
-    mode   => 0775,
+      "${catalina_base}/webapps",
+      $catalina_tmpdir,
+      "${log_base}/${name}" ] :
+      ensure => directory,
+      owner  => root,
+      group  => $tomcat_group,
+      mode   => '0775',
   }
 
   file { "${catalina_base}/logs" :
@@ -105,7 +104,7 @@ define tomcat::instance (
     target => "${log_base}/${name}",
     owner  => root,
     group  => root,
-    mode   => 0755,
+    mode   => '0755',
   }
 
   if ( $catalina_tmpdir != "${catalina_base}/temp" ) {
@@ -114,12 +113,12 @@ define tomcat::instance (
       target => $catalina_tmpdir,
       owner  => root,
       group  => root,
-      mode   => 0755,
+      mode   => '0755',
     }
   }
 
   # setup tomcat env
-  file { "${tomcat_envfile}" :
+  file { $tomcat_envfile :
     ensure  => $ensure,
     owner   => 'root',
     group   => 'root',
