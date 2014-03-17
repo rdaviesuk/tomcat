@@ -81,7 +81,7 @@ define tomcat::instance (
     require    => File["/etc/init.d/${service_name}"],
   }
 
-  # setup catalina_base, we'll assume /conf goes here
+  # create catalina_base
   file { $catalina_base :
       ensure => directory,
       owner  => 'root',
@@ -89,7 +89,7 @@ define tomcat::instance (
       mode   => '0755',
   }
 
-  # create /work, /webapps, log dir writeable by tomcat_group
+  # create conf, work, webapps, and logdir writeable by tomcat_group
   file { [ "${catalina_base}/conf",
         "${catalina_base}/webapps",
         "${catalina_base}/work",
