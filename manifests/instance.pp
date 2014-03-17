@@ -77,43 +77,47 @@ define tomcat::instance (
     enable     => $service_enable,
     hasrestart => true,
     hasstatus  => true,
+    require    => File["/etc/init.d/${service_name}"],
   }
 
   # setup catalina_base, we'll assume /conf goes here
-  file { [ $catalina_base,
-      "${catalina_base}/conf" ] :
+  file { $catalina_base :
       ensure => directory,
-      owner  => root,
-      group  => root,
+      owner  => 'root',
+      group  => 'root',
       mode   => '0755',
   }
 
   # create /work, /webapps, log dir writeable by tomcat_group
-  file { [ "${catalina_base}/work",
-      "${catalina_base}/webapps",
-      $catalina_tmpdir,
-      "${log_base}/${name}" ] :
+  file { [ "${catalina_base}/conf", 
+           "${catalina_base}/webapps",
+           "${catalina_base}/work",
+           "${log_base}/${name}",
+           $catalina_tmpdir, ] :
       ensure => directory,
-      owner  => root,
+      owner  => 'root',
       group  => $tomcat_group,
       mode   => '0775',
+      notify  => Service[$service_name],
   }
 
   file { "${catalina_base}/logs" :
-    ensure => link,
-    target => "${log_base}/${name}",
-    owner  => root,
-    group  => root,
-    mode   => '0755',
+    ensure  => link,
+    target  => "${log_base}/${name}",
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    notify  => Service[$service_name],
   }
 
   if ( $catalina_tmpdir != "${catalina_base}/temp" ) {
     file { "${catalina_base}/temp" :
       ensure => link,
       target => $catalina_tmpdir,
-      owner  => root,
-      group  => root,
+      owner  => 'root',
+      group  => 'root',
       mode   => '0755',
+      notify  => Service[$service_name],
     }
   }
 
@@ -129,11 +133,12 @@ define tomcat::instance (
 
   # setup server.xml
   file { "${catalina_base}/conf/server.xml" :
-    ensure  => file,
+    ensure  => $ensure,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     content => template("${module_name}/${tomcat_version}/server.xml.erb"),
+    notify  => Service[$service_name],
   }
 
 }
