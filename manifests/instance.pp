@@ -18,8 +18,8 @@ define tomcat::instance (
   $enable_security_manager = false,
   $shutdown_wait           = undef,
   $catalina_pid            = "/var/run/${name}.pid",
-  $log_base                = "/var/log/${parent_service}",
-  $tomcat_envfile          = "${env_base}/${name}",
+  $log_base                = "/var/log/${::tomcat::service_name}",
+  $tomcat_envfile          = "${::tomcat::env_base}/${name}",
   $service_enable          = true,
   $service_name            = $name,
   $shutdown_port           = 8005,
@@ -45,6 +45,12 @@ define tomcat::instance (
     "${ensure} is not supported for ensure.\n  Allowed values are 'present' and 'absent'.")
 
   validate_bool($service_enable)
+
+  if ( $log_base == undef or $log_base == '' ) {
+    $_log_base = "/var/log/${parent_service}"
+  } else {
+    $_log_base = $log_base
+  }
 
   group { $tomcat_group :
     ensure => $ensure,
@@ -92,7 +98,7 @@ define tomcat::instance (
   file { [ "${catalina_base}/work",
       "${catalina_base}/webapps",
       $catalina_tmpdir,
-      "${log_base}/${name}" ] :
+      "${_log_base}/${name}" ] :
       ensure => directory,
       owner  => root,
       group  => $tomcat_group,
