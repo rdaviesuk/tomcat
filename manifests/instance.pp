@@ -7,7 +7,7 @@ define tomcat::instance (
   $catalina_home           = $::tomcat::catalina_home,
   $catalina_base           = "/usr/share/${name}",
   $jasper_home             = undef,
-  $catalina_tmpdir         = "/usr/share/${name}/temp",
+  $catalina_tmpdir         = undef,
   $java_opts               = undef,
   $catalina_opts           = undef,
   $java_endorsed_dirs      = undef,
@@ -41,11 +41,6 @@ define tomcat::instance (
   if ! defined(Class['tomcat']) {
     fail('You must include the tomcat base class before using the tomcat::instance resource')
   }
-
-  validate_re($ensure, '^(present|absent)$',
-    "${ensure} is not supported for ensure.\n  Allowed values are 'present' and 'absent'.")
-
-  validate_bool($service_enable)
 
   group { $tomcat_group :
     ensure => $ensure,
@@ -89,12 +84,18 @@ define tomcat::instance (
       mode   => '0755',
   }
 
+  if ($catalina_tmpdir == undef or $catalina_tmpdir == '') {
+    $_catalina_tmpdir = "${catalina_base}/temp"
+  } else {
+    $_catalina_tmpdir = $catalina_tmpdir
+  }
+
   # create conf, work, webapps, and logdir writeable by tomcat_group
   file { [ "${catalina_base}/conf",
         "${catalina_base}/webapps",
         "${catalina_base}/work",
         "${log_base}/${name}",
-        $catalina_tmpdir, ] :
+        $_catalina_tmpdir, ] :
       ensure => directory,
       owner  => 'root',
       group  => $tomcat_group,
@@ -111,7 +112,7 @@ define tomcat::instance (
     notify => Service[$service_name],
   }
 
-  if ( $catalina_tmpdir != "${catalina_base}/temp" ) {
+  if ( $_catalina_tmpdir != "${catalina_base}/temp" ) {
     file { "${catalina_base}/temp" :
       ensure => link,
       target => $catalina_tmpdir,
