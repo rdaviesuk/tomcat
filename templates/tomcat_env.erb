@@ -35,11 +35,7 @@ JASPER_HOME="<%= @jasper_home %>"
 <% else -%>
 #JASPER_HOME="/usr/share/tomcat6"
 <% end -%>
-<% if @catalina_tmpdir && @catalina_tmpdir != '' -%>
-CATALINA_TMPDIR="<%= @catalina_tmpdir %>"
-<% else -%>
-#CATALINA_TMPDIR="/var/cache/tomcat6/temp"
-<% end -%>
+CATALINA_TMPDIR="<%= @_catalina_tmpdir %>"
 
 # You can pass some parameters to java here if you wish to
 <% if @java_opts && @java_opts != '' -%>
