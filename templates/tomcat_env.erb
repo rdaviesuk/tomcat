@@ -39,7 +39,7 @@ CATALINA_TMPDIR="<%= @_catalina_tmpdir %>"
 
 # You can pass some parameters to java here if you wish to
 <% if @java_opts && @java_opts != '' -%>
-JAVA_OPTS="<%= @java_opts %>"
+JAVA_OPTS="$JAVA_OPTS <%= @java_opts %>"
 <% else -%>
 #JAVA_OPTS="-Xminf0.1 -Xmaxf0.3"
 <% end -%>
