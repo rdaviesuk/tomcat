@@ -30,8 +30,7 @@ define tomcat::instance (
   $unpack_wars                = true,
   $auto_deploy                = true,
   $access_log_pattern         = undef,
-  $default_logging_properties = true,
-  $default_catalina_policy    = true,
+  $default_confs              = true,
   $fragment_host              = undef,
   $fragment_engine            = undef,
   $fragment_service           = undef,
@@ -93,6 +92,8 @@ define tomcat::instance (
 
   # create conf, work, webapps, and logdir writeable by tomcat_group
   file { [ "${catalina_base}/conf",
+        "${catalina_base}/conf/Catalina",
+        "${catalina_base}/conf/Catalina/localhost",
         "${catalina_base}/webapps",
         "${catalina_base}/work",
         "${log_base}/${name}",
@@ -124,18 +125,7 @@ define tomcat::instance (
     }
   }
 
-  if ( $default_logging_properties ) {
-    file { "${catalina_base}/conf/logging.properties" :
-      ensure => link,
-      target => "${catalina_home}/conf/logging.properties",
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0755',
-      notify => Service[$service_name],
-    }
-  }
-
-  if ( $default_catalina_policy ) {
+  if ( $default_confs ) {
     file { "${catalina_base}/conf/catalina.policy" :
       ensure => link,
       target => "${catalina_home}/conf/catalina.policy",
@@ -144,6 +134,56 @@ define tomcat::instance (
       mode   => '0755',
       notify => Service[$service_name],
     }
+
+    if ( $tomcat_version >= '5.0' ) {
+      file { "${catalina_base}/conf/catalina.properties" :
+        ensure => link,
+        target => "${catalina_home}/conf/catalina.properties",
+        owner  => 'root',
+        group  => 'root',
+        mode   => '0755',
+        notify => Service[$service_name],
+      }
+    }
+
+    if ( $tomcat_version >= '5.5' ) {
+      file { "${catalina_base}/conf/context.xml" :
+        ensure => link,
+        target => "${catalina_home}/conf/context.xml",
+        owner  => 'root',
+        group  => 'root',
+        mode   => '0755',
+        notify => Service[$service_name],
+      }
+    }
+
+    file { "${catalina_base}/conf/logging.properties" :
+      ensure => link,
+      target => "${catalina_home}/conf/logging.properties",
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755',
+      notify => Service[$service_name],
+    }
+
+    file { "${catalina_base}/conf/tomcat-users.xml" :
+      ensure => link,
+      target => "${catalina_home}/conf/tomcat-users.xml",
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755',
+      notify => Service[$service_name],
+    }
+
+    file { "${catalina_base}/conf/web.xml" :
+      ensure => link,
+      target => "${catalina_home}/conf/web.xml",
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755',
+      notify => Service[$service_name],
+    }
+
   }
     
   # setup tomcat env
