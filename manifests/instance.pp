@@ -1,41 +1,46 @@
 # see README.md
 define tomcat::instance (
-  $java_home                  = undef,
-  $parent_service             = $::tomcat::service_name,
-  $env_base                   = $::tomcat::env_base,
-  $tomcat_version             = $::tomcat::tomcat_version,
-  $catalina_home              = $::tomcat::catalina_home,
-  $catalina_base              = "/usr/share/${name}",
-  $jasper_home                = undef,
-  $catalina_tmpdir            = undef,
-  $java_opts                  = undef,
-  $catalina_opts              = undef,
-  $java_endorsed_dirs         = undef,
-  $tomcat_user                = $name,
-  $tomcat_group               = $name,
-  $tomcat_uid                 = undef,
-  $tomcat_gid                 = undef,
-  $tomcat_locale              = undef,
-  $enable_security_manager    = false,
-  $shutdown_wait              = undef,
-  $catalina_pid               = "/var/run/${name}.pid",
-  $log_base                   = "/var/log/${::tomcat::service_name}",
-  $tomcat_envfile             = "${::tomcat::env_base}/${name}",
-  $service_enable             = true,
-  $service_name               = $name,
-  $shutdown_port              = 8005,
-  $ajp_port                   = 8009,
-  $http_port                  = undef,
-  $https_port                 = undef,
-  $unpack_wars                = true,
-  $auto_deploy                = true,
-  $access_log_pattern         = undef,
-  $default_confs              = true,
-  $fragment_host              = undef,
-  $fragment_engine            = undef,
-  $fragment_service           = undef,
-  $fragment_server            = undef,
-  $ensure                     = 'present',
+  $java_home                   = undef,
+  $parent_service              = $::tomcat::service_name,
+  $env_base                    = $::tomcat::env_base,
+  $tomcat_version              = $::tomcat::tomcat_version,
+  $catalina_home               = $::tomcat::catalina_home,
+  $catalina_base               = "/usr/share/${name}",
+  $jasper_home                 = undef,
+  $catalina_tmpdir             = undef,
+  $java_opts                   = undef,
+  $catalina_opts               = undef,
+  $java_endorsed_dirs          = undef,
+  $tomcat_user                 = $name,
+  $tomcat_group                = $name,
+  $tomcat_uid                  = undef,
+  $tomcat_gid                  = undef,
+  $tomcat_locale               = undef,
+  $enable_security_manager     = false,
+  $shutdown_wait               = undef,
+  $catalina_pid                = "/var/run/${name}.pid",
+  $log_base                    = "/var/log/${::tomcat::service_name}",
+  $tomcat_envfile              = "${::tomcat::env_base}/${name}",
+  $service_enable              = true,
+  $service_name                = $name,
+  $shutdown_port               = 8005,
+  $ajp_port                    = 8009,
+  $http_port                   = undef,
+  $https_port                  = undef,
+  $unpack_wars                 = true,
+  $auto_deploy                 = true,
+  $access_log_pattern          = undef,
+  $default_catalina_policy     = true,
+  $default_catalina_properties = true,
+  $default_context_xml         = true,
+  $default_logging_properties  = true,
+  $default_tomcat_users_xml    = true,
+  $default_web_xml             = true,
+  $fragment_host               = undef,
+  $fragment_engine             = undef,
+  $fragment_service            = undef,
+  $fragment_server             = undef,
+  $ensure                      = 'present',
 ) {
 
   if ! defined(Class['tomcat']) {
@@ -125,7 +130,7 @@ define tomcat::instance (
     }
   }
 
-  if ( $default_confs ) {
+  if ( $default_catalina_policy ) {
     file { "${catalina_base}/conf/catalina.policy" :
       ensure => link,
       target => "${catalina_home}/conf/catalina.policy",
@@ -134,7 +139,9 @@ define tomcat::instance (
       mode   => '0755',
       notify => Service[$service_name],
     }
+  }
 
+  if ( $default_catalina_properties ) {
     if ( $tomcat_version >= '5.0' ) {
       file { "${catalina_base}/conf/catalina.properties" :
         ensure => link,
@@ -145,7 +152,9 @@ define tomcat::instance (
         notify => Service[$service_name],
       }
     }
+  }
 
+  if ( $default_context_xml ) {
     if ( $tomcat_version >= '5.5' ) {
       file { "${catalina_base}/conf/context.xml" :
         ensure => link,
@@ -156,7 +165,9 @@ define tomcat::instance (
         notify => Service[$service_name],
       }
     }
+  }
 
+  if ( $default_logging_properties ) {
     file { "${catalina_base}/conf/logging.properties" :
       ensure => link,
       target => "${catalina_home}/conf/logging.properties",
@@ -165,7 +176,9 @@ define tomcat::instance (
       mode   => '0755',
       notify => Service[$service_name],
     }
+  }
 
+  if ( $default_tomcat_users_xml ) {
     file { "${catalina_base}/conf/tomcat-users.xml" :
       ensure => link,
       target => "${catalina_home}/conf/tomcat-users.xml",
@@ -174,7 +187,9 @@ define tomcat::instance (
       mode   => '0755',
       notify => Service[$service_name],
     }
+  }
 
+  if ( $default_web_xml ) {
     file { "${catalina_base}/conf/web.xml" :
       ensure => link,
       target => "${catalina_home}/conf/web.xml",
