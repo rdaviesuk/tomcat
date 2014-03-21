@@ -2,12 +2,9 @@
 define tomcat::instance (
   $java_home                   = undef,
   $parent_service              = $::tomcat::service_name,
-  $tomcat_install = {
-    $tomcat_version            = $::tomcat::tomcat_version,
-    $catalina_home             = $::tomcat::catalina_home,
-    $env_base                  = $::tomcat::env_base,
-    $log_base                  = "/var/log/${::tomcat::service_name}",
-  },
+  $env_base                    = $::tomcat::env_base,
+  $tomcat_version              = $::tomcat::tomcat_version,
+  $catalina_home               = $::tomcat::catalina_home,
   $catalina_base               = "/usr/share/${name}",
   $jasper_home                 = undef,
   $catalina_tmpdir             = undef,
@@ -22,7 +19,8 @@ define tomcat::instance (
   $enable_security_manager     = false,
   $shutdown_wait               = undef,
   $catalina_pid                = "/var/run/${name}.pid",
-  $tomcat_envfile              = "${::tomcat::tomcat_install::env_base}/${name}",
+  $log_base                    = "/var/log/${::tomcat::service_name}",
+  $tomcat_envfile              = "${::tomcat::env_base}/${name}",
   $service_enable              = true,
   $service_name                = $name,
   $shutdown_port               = 8005,
@@ -103,7 +101,7 @@ define tomcat::instance (
         "${catalina_base}/conf/Catalina/localhost",
         "${catalina_base}/webapps",
         "${catalina_base}/work",
-        "${tomcat_install::log_base}/${name}",
+        "${log_base}/${name}",
         $_catalina_tmpdir, ] :
       ensure => directory,
       owner  => 'root',
@@ -114,7 +112,7 @@ define tomcat::instance (
 
   file { "${catalina_base}/logs" :
     ensure => link,
-    target => "${tomcat_install::log_base}/${name}",
+    target => "${log_base}/${name}",
     owner  => 'root',
     group  => 'root',
     mode   => '0755',
@@ -135,7 +133,7 @@ define tomcat::instance (
   if ( $default_catalina_policy ) {
     file { "${catalina_base}/conf/catalina.policy" :
       ensure => link,
-      target => "${tomcat_install::catalina_home}/conf/catalina.policy",
+      target => "${catalina_home}/conf/catalina.policy",
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
@@ -144,10 +142,10 @@ define tomcat::instance (
   }
 
   if ( $default_catalina_properties ) {
-    if ( $tomcat_install::tomcat_version >= '5.0' ) {
+    if ( $tomcat_version >= '5.0' ) {
       file { "${catalina_base}/conf/catalina.properties" :
         ensure => link,
-        target => "${tomcat_install::catalina_home}/conf/catalina.properties",
+        target => "${catalina_home}/conf/catalina.properties",
         owner  => 'root',
         group  => 'root',
         mode   => '0755',
@@ -157,10 +155,10 @@ define tomcat::instance (
   }
 
   if ( $default_context_xml ) {
-    if ( $tomcat_install::tomcat_version >= '5.5' ) {
+    if ( $tomcat_version >= '5.5' ) {
       file { "${catalina_base}/conf/context.xml" :
         ensure => link,
-        target => "${tomcat_install::catalina_home}/conf/context.xml",
+        target => "${catalina_home}/conf/context.xml",
         owner  => 'root',
         group  => 'root',
         mode   => '0755',
@@ -172,7 +170,7 @@ define tomcat::instance (
   if ( $default_logging_properties ) {
     file { "${catalina_base}/conf/logging.properties" :
       ensure => link,
-      target => "${tomcat_install::catalina_home}/conf/logging.properties",
+      target => "${catalina_home}/conf/logging.properties",
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
@@ -183,7 +181,7 @@ define tomcat::instance (
   if ( $default_tomcat_users_xml ) {
     file { "${catalina_base}/conf/tomcat-users.xml" :
       ensure => link,
-      target => "${tomcat_install::catalina_home}/conf/tomcat-users.xml",
+      target => "${catalina_home}/conf/tomcat-users.xml",
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
@@ -194,7 +192,7 @@ define tomcat::instance (
   if ( $default_web_xml ) {
     file { "${catalina_base}/conf/web.xml" :
       ensure => link,
-      target => "${tomcat_install::catalina_home}/conf/web.xml",
+      target => "${catalina_home}/conf/web.xml",
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
@@ -219,7 +217,7 @@ define tomcat::instance (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template("${module_name}/${tomcat_install::tomcat_version}/server.xml.erb"),
+    content => template("${module_name}/${tomcat_version}/server.xml.erb"),
     notify  => Service[$service_name],
   }
 
