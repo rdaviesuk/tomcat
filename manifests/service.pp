@@ -1,9 +1,9 @@
 # see README.md
-class tomcat::service {
+class tomcat::service inherits tomcat {
 
-  service { $tomcat::service_name :
-    ensure     => $tomcat::service_enable,
-    enable     => $tomcat::service_enable,
+  service { $service_name :
+    ensure     => $service_enable,
+    enable     => $service_enable,
     hasrestart => true,
     hasstatus  => true,
   }

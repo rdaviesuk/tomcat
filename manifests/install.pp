@@ -1,9 +1,9 @@
 # see README.md
-class tomcat::install {
+class tomcat::install inherits tomcat {
 
   package { 'tomcat':
-    ensure => $tomcat::package_ensure,
-    name   => $tomcat::package_name,
+    ensure => $package_ensure,
+    name   => $package_name,
   }
 
 }
