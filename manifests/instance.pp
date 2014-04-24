@@ -6,6 +6,7 @@ define tomcat::instance (
   $tomcat_version              = $::tomcat::tomcat_version,
   $catalina_home               = $::tomcat::catalina_home,
   $catalina_base               = "/usr/share/${name}",
+  $create_webapps_dir          = true,
   $jasper_home                 = undef,
   $catalina_tmpdir             = undef,
   $java_opts                   = undef,
@@ -99,7 +100,6 @@ define tomcat::instance (
   file { [ "${catalina_base}/conf",
         "${catalina_base}/conf/Catalina",
         "${catalina_base}/conf/Catalina/localhost",
-        "${catalina_base}/webapps",
         "${catalina_base}/work",
         "${log_base}/${name}",
         $_catalina_tmpdir, ] :
@@ -108,6 +108,16 @@ define tomcat::instance (
       group  => $tomcat_group,
       mode   => '0775',
       notify => Service[$service_name],
+  }
+
+  if ($create_webapps_dir) {
+    file { "${catalina_base}/webapps" :
+      ensure => directory,
+      owner  => 'root',
+      group  => $tomcat_group,
+      mode   => '0775',
+      notify => Service[$service_name],
+    }
   }
 
   file { "${catalina_base}/logs" :
