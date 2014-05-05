@@ -169,11 +169,7 @@
                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
         -->
 <% end -%>
-<%= scope.function_template(['tomcat/fragment_host.erb']) -%>
       </Host>
-<%= scope.function_template(['tomcat/fragment_engine.erb']) -%>
     </Engine>
-<%= scope.function_template(['tomcat/fragment_service.erb']) -%>
   </Service>
-<%= scope.function_template(['tomcat/fragment_server.erb']) -%>
 </Server>
