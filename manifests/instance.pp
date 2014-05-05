@@ -37,15 +37,18 @@ define tomcat::instance (
   $default_logging_properties  = true,
   $default_tomcat_users_xml    = true,
   $default_web_xml             = true,
-  $fragment_host               = undef,
-  $fragment_engine             = undef,
-  $fragment_service            = undef,
-  $fragment_server             = undef,
+  $server_xml_template         = undef,
   $ensure                      = 'present',
 ) {
 
   if ! defined(Class['tomcat']) {
     fail('You must include the tomcat base class before using the tomcat::instance resource')
+  }
+
+  if ( $server_xml_template == undef or $server_xml_template == '' ) {
+    $_server_xml_template = "${module_name}/${tomcat_version}/server.xml.erb"
+  } else {
+    $_server_xml_template = $server_xml_template
   }
 
   group { $tomcat_group :
@@ -227,7 +230,7 @@ define tomcat::instance (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template("${module_name}/${tomcat_version}/server.xml.erb"),
+    content => template($_server_xml_template),
     notify  => Service[$service_name],
   }
 
