@@ -10,8 +10,9 @@ class tomcat (
   $tomcat_version   = $tomcat::params::tomcat_version,
 ) inherits tomcat::params {
 
-  if $package_ensure {
-    class { 'tomcat::install' : } ~>
-    class { 'tomcat::service' : }
-  }
+  anchor { 'tomcat::begin' : } ->
+  class  { 'tomcat::install' : } ->
+  class  { 'tomcat::service' : } ->
+  anchor { 'tomcat::end' : }
+
 }
