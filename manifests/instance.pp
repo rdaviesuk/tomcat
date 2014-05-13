@@ -61,7 +61,7 @@ define tomcat::instance (
     uid        => $tomcat_uid,
     gid        => $tomcat_gid,
     home       => $catalina_base,
-    shell      => '/bin/nologin',
+    shell      => '/sbin/nologin',
     managehome => false,
     require    => Group[ $tomcat_group ],
   }
