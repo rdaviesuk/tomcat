@@ -173,11 +173,7 @@
                prefix="localhost_access_log." suffix=".txt" pattern="common" resolveHosts="false"/>
         -->
 <% end -%>
-<%= scope.function_template(['tomcat/fragment_host.erb']) -%>
       </Host>
-<%= scope.function_template(['tomcat/fragment_engine.erb']) -%>
     </Engine>
-<%= scope.function_template(['tomcat/fragment_service.erb']) -%>
   </Service>
-<%= scope.function_template(['tomcat/fragment_server.erb']) -%>
 </Server>
